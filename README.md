@@ -13,4 +13,5 @@ Entirely in Python ('cause I don't need an efficient program), it will use your 
 
 ## Requirements
 
-I didn't begin the project yet, so... Python? Let's say: Python 3.8.12.
+- Python 3.8.10
+- TKinter 8.6
