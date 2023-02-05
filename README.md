@@ -6,8 +6,8 @@ Entirely in Python ('cause I don't need an efficient program), it will use your 
 
 ## Wanted functionalities
 
-- Open a new tab (maybe a TKinter one?) for the application;
-- Display colors;
+- Open a new tab (maybe a TKinter one?) for the application [DONE];
+- Display colors [DONE];
 - Display a color wheel (hence the name) to make changing them intuitive and graphical;
 - Brightness slider.
 
