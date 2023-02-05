@@ -2,8 +2,23 @@ import tkinter
 
 class ColorWheel():
         # TODO: Create params passing to eliminate all hardcoded values
-        def __init__(self):
+        def __init__(self, color_table=None):
+
+            if color_table is None:
+                self.color_table = {
+                    "red": "#ff0000",
+                    "green": "#00ff00",
+                    "blue": "#0000ff",
+                    "pink": "#d7449a",
+                    "white": "#ffffff",
+                    "black": "#000000",
+                }
+            else:
+                self.color_table = color_table
+
             super().__init__()
+
+        ####### WINDOW METHODS #######
 
         def _create_window(self):
             self.root = tkinter.Tk()
@@ -18,18 +33,22 @@ class ColorWheel():
                 f'{self.W_max}x{self.H_max}'
             )
 
+        ####### MAIN RECT METHODS #######
+
         def _display_color(self):
-            self.root.title("Coloured Rects")
+            self.root.title("ColorWheel")
 
             self.canvas = tkinter.Canvas(master=self.root)
             
             self.display_rect = self.canvas.create_rectangle(
                 0, 0, self.W_max - self.W_button, self.H_max - 0,
-                outline='#90527a',   # only first display color
-                fill='#90527a',      # only first display color
+                outline='#000000',   # only first display color
+                fill='#000000',      # only first display color
             )
 
             self.canvas.pack(fill=tkinter.BOTH, expand=1)
+
+        ####### CUSTOM COLOR ENTRY METHODS #######
 
         def _create_entry(self):
 
@@ -48,7 +67,7 @@ class ColorWheel():
             self.entry_button = tkinter.Button(
                 self.root,
                 textvariable=entry_button_label,
-                command=self.__entry_cmd_print_color,
+                command=self.__entry_cmd_change_color,
             )
             self.entry_button.pack()
 
@@ -76,7 +95,7 @@ class ColorWheel():
             except ValueError:
                 return False
 
-        def __entry_cmd_print_color(self):
+        def __entry_cmd_change_color(self):
             new_color_str = self.entry_var.get()
 
             if new_color_str[0] != '#':
@@ -93,46 +112,38 @@ class ColorWheel():
 
             self.entry_var.set('')
 
+        ####### COLOR BUTTONS METHODS #######
+
         def _create_buttons(self):
+            xpos_offset = 70
+
+            for i, (k, v) in enumerate(self.color_table.items()):
+                button_label = tkinter.StringVar()
+                button_label.set(k.capitalize())
+                button = tkinter.Button(
+                    self.root,
+                    textvariable=button_label,
+                    command=self.__button_cmd_color_change(v),
+                )
+                button.pack()
+                button.place(
+                    x=i * xpos_offset,
+                    y=self.H_max - self.H_button + 22,
+                )
+
+        def __button_cmd_color_change(self, rgb_str: str):
+            canvas = self.canvas
+            display_rect = self.display_rect
             
-            red_button_label = tkinter.StringVar()
-            red_button_label.set("Red")
-            self.red_button = tkinter.Button(
-                self.root,
-                textvariable=red_button_label,
-                command=self.__button_cmd_change_color_red,
-            )
-            self.red_button.pack()
-            self.red_button.place(
-                x=0,
-                y=self.H_max - self.H_button + 22,
-            )
+            def __generic_color_change():
+                canvas.itemconfig(
+                    display_rect,
+                    fill=rgb_str,
+                    outline=rgb_str,
+                )
+            return __generic_color_change
 
-            green_button_label = tkinter.StringVar()
-            green_button_label.set("Green")
-            self.green_button = tkinter.Button(
-                self.root,
-                textvariable=green_button_label,
-                command=self.__button_cmd_change_color_green,
-            )
-            self.green_button.pack()
-            self.green_button.place(
-                x=60,
-                y=self.H_max - self.H_button + 22,
-            )
-        def __button_cmd_change_color_red(self):
-            self.canvas.itemconfig(
-                self.display_rect,
-                fill='#cc0000',
-                outline='#cc0000',
-            )
-        def __button_cmd_change_color_green(self):
-            self.canvas.itemconfig(
-                self.display_rect,
-                fill='#6aa84f',
-                outline='#6aa84f',
-            )
-
+        ####### MAIN FUNC #######
 
         def run(self):
             self._create_window()
