@@ -1,4 +1,7 @@
 from src.app import ColorWheel
+from src.config import config_params
 
 if __name__ == '__main__':
-    ColorWheel().run()
+
+    params = config_params(config_type="dev")
+    ColorWheel(params).run()

@@ -1,8 +1,15 @@
 import tkinter
+from src.colorchooser import ColorChooser
 
 class ColorWheel():
-        # TODO: Create params passing to eliminate all hardcoded values
-        def __init__(self, color_table=None):
+
+        def __init__(
+            self,
+            params: dict,
+            color_table: dict = None,
+        ):
+
+            self.params = params
 
             if color_table is None:
                 self.color_table = {
@@ -16,8 +23,6 @@ class ColorWheel():
             else:
                 self.color_table = color_table
 
-            super().__init__()
-
         ####### WINDOW METHODS #######
 
         def _create_window(self):
@@ -26,8 +31,8 @@ class ColorWheel():
             self.W_max = self.root.winfo_screenwidth()
             self.H_max = self.root.winfo_screenheight()
 
-            self.W_button = 0
-            self.H_button = 125
+            self.W_button = self.params["W_button"]
+            self.H_button = self.params["H_button"]
 
             self.root.geometry(
                 f'{self.W_max}x{self.H_max}'
@@ -41,7 +46,7 @@ class ColorWheel():
             self.canvas = tkinter.Canvas(master=self.root)
 
             self.display_rect = self.canvas.create_rectangle(
-                0, 0, self.W_max - self.W_button, self.H_max - 0,
+                0, 0, self.W_max - self.W_button, self.H_max,
                 outline='#000000',   # only first display color
                 fill='#000000',      # only first display color
             )
@@ -58,7 +63,11 @@ class ColorWheel():
             self.entry = tkinter.Entry(
                 self.root,
                 textvariable=self.entry_var,
-                font=("calibre", 10, "normal"),
+                font=(
+                    self.params["font_name"],
+                    self.params["font_size"],
+                    self.params["font_type"],
+                ),
             )
             self.entry.pack()
 
@@ -72,12 +81,12 @@ class ColorWheel():
             self.entry_button.pack()
 
             self.entry.place(
-                x=self.W_max - 230,
-                y=self.H_max - self.H_button + 25,
+                x=self.W_max - self.params["x_entry_offset"],
+                y=self.H_max - self.H_button + self.params["y_entry_offset"],
             )
             self.entry_button.place(
-                x=self.W_max - 80,
-                y=self.H_max - self.H_button + 22,
+                x=self.W_max - self.params["x_entry_button_offset"],
+                y=self.H_max - self.H_button + self.params["y_entry_button_offset"],
             )
 
         @classmethod
@@ -92,13 +101,13 @@ class ColorWheel():
                     (int(rgb_str[3:5], 16) >= 0 and int(rgb_str[3:5], 16) < 256) and \
                     (int(rgb_str[5:], 16) >= 0 and int(rgb_str[5:], 16) < 256)
                 )
-            except ValueError:
+            except (ValueError, IndexError):
                 return False
 
         def __entry_cmd_change_color(self):
             new_color_str = self.entry_var.get()
 
-            if new_color_str[0] != '#':
+            if len(new_color_str) != 0 and new_color_str[0] != '#':
                 new_color_str = f'#{new_color_str}'
 
             if not ColorWheel.__is_valid_rgb(new_color_str):
@@ -115,7 +124,6 @@ class ColorWheel():
         ####### COLOR BUTTONS METHODS #######
 
         def _create_buttons(self):
-            xpos_offset = 70
 
             for i, (k, v) in enumerate(self.color_table.items()):
                 button_label = tkinter.StringVar()
@@ -127,8 +135,8 @@ class ColorWheel():
                 )
                 button.pack()
                 button.place(
-                    x=i * xpos_offset,
-                    y=self.H_max - self.H_button + 22,
+                    x=i * self.params["x_button_offset"],
+                    y=self.H_max - self.H_button + self.params["y_button_offset"],
                 )
 
             # Creating color chooser
@@ -141,8 +149,8 @@ class ColorWheel():
             )
             button_chooser.pack()
             button_chooser.place(
-                x=(i + 1) * xpos_offset,
-                y=self.H_max - self.H_button + 22,
+                x=(i + 1) * self.params["x_button_offset"],
+                y=self.H_max - self.H_button + self.params["y_button_offset"],
             )
 
         def __button_cmd_color_change(self, rgb_str: str):
@@ -166,6 +174,7 @@ class ColorWheel():
                 fill=selected_color,
                 outline=selected_color,
             )
+
 
         ####### MAIN FUNC #######
 
