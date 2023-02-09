@@ -39,7 +39,7 @@ class ColorWheel():
             self.root.title("ColorWheel")
 
             self.canvas = tkinter.Canvas(master=self.root)
-            
+
             self.display_rect = self.canvas.create_rectangle(
                 0, 0, self.W_max - self.W_button, self.H_max - 0,
                 outline='#000000',   # only first display color
@@ -131,10 +131,24 @@ class ColorWheel():
                     y=self.H_max - self.H_button + 22,
                 )
 
+            # Creating color chooser
+            button_label_chooser = tkinter.StringVar()
+            button_label_chooser.set("Choose Color")
+            button_chooser = tkinter.Button(
+                self.root,
+                textvariable=button_label_chooser,
+                command=self.__button_cmd_color_chooser,
+            )
+            button_chooser.pack()
+            button_chooser.place(
+                x=(i + 1) * xpos_offset,
+                y=self.H_max - self.H_button + 22,
+            )
+
         def __button_cmd_color_change(self, rgb_str: str):
             canvas = self.canvas
             display_rect = self.display_rect
-            
+
             def __generic_color_change():
                 canvas.itemconfig(
                     display_rect,
@@ -142,6 +156,16 @@ class ColorWheel():
                     outline=rgb_str,
                 )
             return __generic_color_change
+
+        def __button_cmd_color_chooser(self):
+            from tkinter.colorchooser import askcolor
+
+            selected_color = askcolor(title="Choose Color")[-1]
+            self.canvas.itemconfig(
+                self.display_rect,
+                fill=selected_color,
+                outline=selected_color,
+            )
 
         ####### MAIN FUNC #######
 
